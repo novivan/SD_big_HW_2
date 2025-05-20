@@ -61,6 +61,12 @@ java -jar target/file-analysis-service-1.0-SNAPSHOT.jar
 
 После запуска API Gateway будет доступен по адресу `http://localhost:8080`.
 
+Доступные API endpoints:
+- `http://localhost:8080/` - домашняя страница с информацией о системе
+- `http://localhost:8080/files/**` - операции с файлами (загрузка, получение)
+- `http://localhost:8080/analysis/**` - операции анализа файлов
+- `http://localhost:8080/swagger-ui.html` - документация API
+
 ## Использование
 ### Загрузка файла
 ```bash
