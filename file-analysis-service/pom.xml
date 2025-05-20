@@ -59,6 +59,23 @@
 
   <build>
     <plugins>
+      <!-- Spring Boot Maven Plugin -->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>3.2.5</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <mainClass>com.example.FileAnalysisServiceApplication</mainClass>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
       <!-- Configure the Maven compiler plugin to use the -parameters flag -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
