@@ -14,6 +14,19 @@ spring:
           uri: http://localhost:5002
           predicates:
             - Path=/analysis/**
+        # Добавляем маршруты для API-документации сервисов
+        - id: file-storing-openapi
+          uri: http://localhost:5001
+          predicates:
+            - Path=/file-storing-api-docs/**
+          filters:
+            - RewritePath=/file-storing-api-docs/(?<segment>.*), /v3/api-docs/$\{segment}
+        - id: file-analysis-openapi
+          uri: http://localhost:5002
+          predicates:
+            - Path=/file-analysis-api-docs/**
+          filters:
+            - RewritePath=/file-analysis-api-docs/(?<segment>.*), /v3/api-docs/$\{segment}
   main:
     web-application-type: reactive
 
@@ -21,7 +34,14 @@ spring:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-    enabled: true
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway
+      - url: /file-storing-api-docs
+        name: File Storing Service
+      - url: /file-analysis-api-docs
+        name: File Analysis Service
   api-docs:
-    path: /api-docs
+    path: /v3/api-docs
     enabled: true

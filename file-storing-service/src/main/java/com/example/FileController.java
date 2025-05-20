@@ -1,5 +1,6 @@
 package com.example;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,5 +43,10 @@ public class FileController {
         return fileRepository.findById(fileId)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<FileEntity>> getAllFiles() {
+        return ResponseEntity.ok(fileRepository.findAll());
     }
 }

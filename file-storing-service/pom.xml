@@ -37,6 +37,13 @@
       <scope>runtime</scope>
     </dependency>
     
+    <!-- SpringDoc OpenAPI для документации API -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-ui</artifactId>
+      <version>1.7.0</version>
+    </dependency>
+    
      <!-- Test Dependencies -->
     <dependency>
         <groupId>org.springframework.boot</groupId>

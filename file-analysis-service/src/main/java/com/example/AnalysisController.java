@@ -57,4 +57,33 @@ public class AnalysisController {
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
+    
+    @GetMapping("/{fileId}/wordcloud")
+    public ResponseEntity<String> getWordCloud(@PathVariable String fileId) {
+        try {
+            // Получаем результаты анализа
+            ResponseEntity<AnalysisResult> analysisResponse = getAnalysis(fileId);
+            if (!analysisResponse.getStatusCode().is2xxSuccessful() || analysisResponse.getBody() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Analysis not found");
+            }
+            
+            // Получаем содержимое файла
+            String fileServiceUrl = "http://localhost:5001/files/" + fileId;
+            ResponseEntity<FileEntity> fileResponse = restTemplate.getForEntity(fileServiceUrl, FileEntity.class);
+            if (!fileResponse.getStatusCode().is2xxSuccessful() || fileResponse.getBody() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
+            }
+            
+            FileEntity file = fileResponse.getBody();
+            
+            // Здесь должна быть реализация создания облака слов с использованием QuickChart API
+            // Для примера просто возвращаем ссылку на API
+            String wordCloudUrl = "https://quickchart.io/wordcloud?text=" + 
+                                 java.net.URLEncoder.encode(file.getContent(), "UTF-8");
+            
+            return ResponseEntity.ok("Word cloud URL: " + wordCloudUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating word cloud: " + e.getMessage());
+        }
+    }
 }

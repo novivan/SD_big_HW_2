@@ -50,6 +50,13 @@
       <artifactId>springdoc-openapi-webflux-ui</artifactId>
       <version>${springdoc.version}</version>
     </dependency>
+    
+    <!-- SpringDoc OpenAPI для агрегации документации -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-webflux-core</artifactId>
+      <version>${springdoc.version}</version>
+    </dependency>
   </dependencies>
 
   <!-- Управление зависимостями Spring Cloud -->
