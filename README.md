@@ -68,24 +68,54 @@ java -jar target/file-analysis-service-1.0-SNAPSHOT.jar
 - `http://localhost:8080/swagger-ui.html` - документация API
 
 ## Использование
-### Загрузка файла
-```bash
-curl -X POST -F "file=@path/to/your/file.txt" http://localhost:8080/api/files
-```
+### API Endpoints
 
-### Получение статистики файла
-```bash
-curl -X GET http://localhost:8080/api/files/{fileId}/statistics
-```
+#### 1. File Storing Service
+- **Загрузка файла**
+  ```bash
+  curl -X POST -F "file=@path/to/your/file.txt" http://localhost:8080/files
+  ```
+  
+- **Получение файла**
+  ```bash
+  curl -X GET http://localhost:8080/files/{fileId}
+  ```
+  
+- **Получение всех файлов**
+  ```bash
+  curl -X GET http://localhost:8080/files
+  ```
 
-### Проверка на плагиат
-```bash
-curl -X GET http://localhost:8080/api/files/{fileId}/plagiarism
-```
+#### 2. File Analysis Service
+- **Анализ файла**
+  ```bash
+  curl -X POST http://localhost:8080/analysis/{fileId}
+  ```
+  
+- **Получение результатов анализа**
+  ```bash
+  curl -X GET http://localhost:8080/analysis/{fileId}
+  ```
+  
+- **Получение статистики файла**
+  ```bash
+  curl -X GET http://localhost:8080/analysis/{fileId}/statistics
+  ```
+  
+- **Проверка на плагиат**
+  ```bash
+  curl -X GET http://localhost:8080/analysis/{fileId}/plagiarism
+  ```
+  
+- **Генерация облака слов**
+  ```bash
+  curl -X GET http://localhost:8080/analysis/{fileId}/wordcloud
+  ```
 
-### Генерация облака слов
-```bash
-curl -X GET http://localhost:8080/api/files/{fileId}/wordcloud
+### Swagger UI
+Документация API доступна по адресу:
+```
+http://localhost:8080/swagger-ui.html
 ```
 
 ## Архитектура
