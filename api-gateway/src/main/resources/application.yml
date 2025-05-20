@@ -1,6 +1,8 @@
 server:
   port: 8080
 spring:
+  application:
+    name: api-gateway
   cloud:
     gateway:
       routes:
@@ -12,6 +14,9 @@ spring:
           uri: http://localhost:5002
           predicates:
             - Path=/analysis/**
+  main:
+    web-application-type: reactive
+
 springdoc:
   api-docs:
     path: /api-docs
