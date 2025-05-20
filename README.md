@@ -23,7 +23,7 @@
 ## Установка
 1. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/your-username/SD_big_HW_2.git
+   git clone https://github.com/novivan/SD_big_HW_2.git
    cd SD_big_HW_2
    ```
 
