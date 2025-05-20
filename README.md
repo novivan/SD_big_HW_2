@@ -48,15 +48,15 @@
 ```bash
 # Запуск API Gateway
 cd api-gateway
-java -jar target/api-gateway.jar
+java -jar target/api-gateway-1.0-SNAPSHOT.jar
 
 # Запуск File Storing Service
 cd ../file-storing-service
-java -jar target/file-storing-service.jar
+java -jar target/file-storing-service-1.0-SNAPSHOT.jar
 
 # Запуск File Analysis Service
 cd ../file-analysis-service
-java -jar target/file-analysis-service.jar
+java -jar target/file-analysis-service-1.0-SNAPSHOT.jar
 ```
 
 После запуска API Gateway будет доступен по адресу `http://localhost:8080`.
