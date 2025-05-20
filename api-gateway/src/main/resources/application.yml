@@ -14,12 +14,6 @@ spring:
           uri: http://localhost:5002
           predicates:
             - Path=/analysis/**
-      # Отключаем автоматическую маршрутизацию для корневого пути,
-      # чтобы обрабатывать его нашим контроллером
-      default-filters:
-        - name: RouteToRequestUrl
-          args:
-            enabled: false
   main:
     web-application-type: reactive
 
