@@ -14,12 +14,6 @@
 ## Описание проекта
 Данный проект представляет собой микросервисное веб-приложение для анализа студенческих отчетов. Система позволяет загружать текстовые файлы (.txt), анализировать их содержимое, включая подсчет статистики (абзацы, слова, символы), проверку на плагиат и визуализацию данных (облака слов).
 
-## Требования
-Для работы с проектом необходимы следующие компоненты:
-- Java 11+ (JDK)
-- Maven или Gradle
-- Git
-
 ## Установка
 1. Клонируйте репозиторий:
    ```bash
@@ -51,11 +45,11 @@ cd api-gateway
 java -jar target/api-gateway-1.0-SNAPSHOT.jar
 
 # В отдельном терминале: запуск File Storing Service
-cd ../file-storing-service
+cd file-storing-service
 java -jar target/file-storing-service-1.0-SNAPSHOT.jar
 
 # В отдельном терминале: запуск File Analysis Service
-cd ../file-analysis-service
+cd file-analysis-service
 java -jar target/file-analysis-service-1.0-SNAPSHOT-exec.jar
 ```
 
@@ -195,28 +189,10 @@ echo "URL: $wordcloud_url"
 echo "Все результаты сохранены в директории $OUTPUT_DIR"
 ```
 
-### Прямой доступ к микросервисам (для отладки)
-
-Помимо использования API Gateway, вы также можете обращаться напрямую к микросервисам:
-
-- File Storing Service: `http://localhost:5001/files/**`
-- File Analysis Service: `http://localhost:5002/analysis/**`
-
-Например:
-```bash
-# Получение файла напрямую из File Storing Service
-curl -X GET http://localhost:5001/files/$fileId
-
-# Анализ файла напрямую через File Analysis Service
-curl -X POST http://localhost:5002/analysis/$fileId
-```
-
 ### Swagger UI
-Документация API доступна по адресам:
+Документация API доступна по адресу:
 ```
 http://localhost:8080/swagger-ui.html  # Через API Gateway
-http://localhost:5001/swagger-ui.html  # File Storing Service
-http://localhost:5002/swagger-ui.html  # File Analysis Service
 ```
 
 ## Архитектура
