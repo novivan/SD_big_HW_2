@@ -14,19 +14,31 @@ spring:
           uri: http://localhost:5002
           predicates:
             - Path=/analysis/**
-        # Добавляем маршруты для API-документации сервисов
-        - id: file-storing-openapi
+        # Маршруты для API-документации
+        - id: file-storing-swagger-ui
           uri: http://localhost:5001
           predicates:
-            - Path=/file-storing-api-docs/**
+            - Path=/file-storing/swagger-ui/**
           filters:
-            - RewritePath=/file-storing-api-docs/(?<segment>.*), /v3/api-docs/$\{segment}
-        - id: file-analysis-openapi
+            - RewritePath=/file-storing/swagger-ui/(?<segment>.*), /swagger-ui/$\{segment}
+        - id: file-storing-api-docs
+          uri: http://localhost:5001
+          predicates:
+            - Path=/file-storing/v3/api-docs/**
+          filters:
+            - RewritePath=/file-storing/v3/api-docs/(?<segment>.*), /v3/api-docs/$\{segment}
+        - id: file-analysis-swagger-ui
           uri: http://localhost:5002
           predicates:
-            - Path=/file-analysis-api-docs/**
+            - Path=/file-analysis/swagger-ui/**
           filters:
-            - RewritePath=/file-analysis-api-docs/(?<segment>.*), /v3/api-docs/$\{segment}
+            - RewritePath=/file-analysis/swagger-ui/(?<segment>.*), /swagger-ui/$\{segment}
+        - id: file-analysis-api-docs
+          uri: http://localhost:5002
+          predicates:
+            - Path=/file-analysis/v3/api-docs/**
+          filters:
+            - RewritePath=/file-analysis/v3/api-docs/(?<segment>.*), /v3/api-docs/$\{segment}
   main:
     web-application-type: reactive
 
@@ -34,13 +46,12 @@ spring:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-    config-url: /v3/api-docs/swagger-config
     urls:
       - url: /v3/api-docs
         name: API Gateway
-      - url: /file-storing-api-docs
+      - url: /file-storing/v3/api-docs
         name: File Storing Service
-      - url: /file-analysis-api-docs
+      - url: /file-analysis/v3/api-docs
         name: File Analysis Service
   api-docs:
     path: /v3/api-docs
