@@ -1,76 +1,101 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>com.example</groupId>
   <artifactId>file-analysis-service</artifactId>
-  <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>file-analysis-service</name>
-  <url>http://maven.apache.org</url>
+  <packaging>jar</packaging>
+
+  <properties>
+    <java.version>11</java.version>
+    <spring-boot.version>3.2.5</spring-boot.version>
+  </properties>
+
   <dependencies>
+    <!-- Spring Boot Starter Web -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <version>${spring-boot.version}</version>
+    </dependency>
+
+    <!-- Spring Boot Starter Data JPA -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <version>${spring-boot.version}</version>
+    </dependency>
+
+    <!-- H2 Database - добавляем для основной сборки -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>2.2.224</version>
+    </dependency>
+
+    <!-- Jackson Databind - для исправления ошибки с DatatypeFeature -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.16.1</version>
+    </dependency>
+
+    <!-- Spring Boot Starter Test -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>${spring-boot.version}</version>
       <scope>test</scope>
     </dependency>
 
-    <!-- Spring Web -->
+    <!-- Mockito Core -->
     <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <version>3.2.5</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.3.1</version>
+      <scope>test</scope>
     </dependency>
 
-    <!-- Spring Data JPA -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-jpa</artifactId>
-        <version>3.3.4</version>
-    </dependency>
-
-    <!-- H2 Database -->
-    <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>2.3.230</version>
-    </dependency>
-
-    <!-- SpringDoc OpenAPI для документации API -->
+    <!-- SpringDoc OpenAPI -->
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>2.3.0</version>
+      <version>2.1.0</version>
     </dependency>
 
-    <!-- Test Dependencies -->
+    <!-- WireMock для тестирования -->
     <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>5.9.3</version>
-        <scope>test</scope>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8</artifactId>
+      <version>2.35.0</version>
+      <scope>test</scope>
+      <exclusions>
+        <!-- Исключаем конфликтующие зависимости SLF4J -->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
+    <!-- Добавляем правильную версию SLF4J, соответствующую Spring Boot -->
     <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <version>5.9.3</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-test</artifactId>
-        <version>3.2.5</version>
-        <scope>test</scope>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.13</version>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <!-- Spring Boot Maven Plugin -->
+      <!-- Spring Boot Maven Plugin с конфигурацией для исполняемого JAR -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>3.2.5</version>
+        <version>${spring-boot.version}</version>
         <executions>
           <execution>
             <goals>
@@ -78,54 +103,25 @@
             </goals>
             <configuration>
               <mainClass>com.example.FileAnalysisServiceApplication</mainClass>
+              <classifier>exec</classifier>
             </configuration>
           </execution>
         </executions>
       </plugin>
       
-      <!-- Configure the Maven compiler plugin to use the -parameters flag -->
+      <!-- Maven Compiler Plugin с флагом -parameters -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
           <compilerArgs>
             <arg>-parameters</arg>
           </compilerArgs>
         </configuration>
       </plugin>
-      
-      <!-- Keep your existing surefire plugin configuration -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.2.5</version>
-      </plugin>
-
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.11</version>
-        <executions>
-          <execution>
-            <id>prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      
     </plugins>
   </build>
-
 </project>

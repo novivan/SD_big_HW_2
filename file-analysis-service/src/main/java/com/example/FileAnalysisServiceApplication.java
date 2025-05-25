@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class FileAnalysisServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(FileAnalysisServiceApplication.class, args);    
+        SpringApplication.run(FileAnalysisServiceApplication.class, args);
     }
 
     @Bean
