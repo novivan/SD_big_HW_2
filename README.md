@@ -112,12 +112,6 @@ java -jar target/file-analysis-service-1.0-SNAPSHOT-exec.jar
   cat analysis_result.json | jq
   ```
   
-- **Получение результатов анализа с форматированием**
-  ```bash
-  # Получение результатов анализа с форматированным выводом
-  curl -X GET http://localhost:8080/analysis/$fileId | jq
-  ```
-  
 - **Получение статистики файла с сохранением**
   ```bash
   # Получение статистики и сохранение в текстовый файл

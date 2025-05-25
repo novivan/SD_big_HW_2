@@ -1,5 +1,7 @@
 package com.example;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,9 @@ public class AnalysisController {
     @Autowired
     private Environment environment;
     
+    @Autowired
+    private AnalysisResultRepository analysisResultRepository;
+    
     // URL для File Storing Service в соответствии с документацией
     private static final String FILE_SERVICE_URL = "http://localhost:5001/files/";
 
@@ -34,6 +39,10 @@ public class AnalysisController {
             result.setCharacters(44);
             result.setParagraphs(2);
             result.setPlagiarized(false);
+            
+            // Сохраняем результат в базу данных
+            analysisResultRepository.save(result);
+            
             return ResponseEntity.ok(result);
         }
         
@@ -61,6 +70,9 @@ public class AnalysisController {
             // По умолчанию считаем, что плагиата нет
             result.setPlagiarized(false);
             
+            // Сохраняем результат в базу данных
+            analysisResultRepository.save(result);
+            
             return ResponseEntity.ok(result);
         }
         
@@ -70,8 +82,16 @@ public class AnalysisController {
     // Эндпоинт для получения ранее проведённого анализа
     @GetMapping("/{fileId}")
     public ResponseEntity<AnalysisResult> getAnalysis(@PathVariable String fileId) {
-        // Если анализа для данного файла не найдено, вернем 404.
-        // Для теста, если fileId равен "test-file-id", возвращаем фиксированные значения.
+        // Проверяем наличие результата в базе данных
+        Optional<AnalysisResult> resultOptional = analysisResultRepository.findById(fileId);
+        
+        // Если результат найден в БД, возвращаем его
+        if (resultOptional.isPresent()) {
+            return ResponseEntity.ok(resultOptional.get());
+        }
+        
+        // Для теста, если fileId равен "test-file-id", возвращаем фиксированные значения
+        // (но только если результат не был найден в БД)
         if ("test-file-id".equals(fileId)) {
             AnalysisResult result = new AnalysisResult();
             result.setFileId(fileId);
@@ -81,6 +101,8 @@ public class AnalysisController {
             result.setPlagiarized(false);
             return ResponseEntity.ok(result);
         }
+        
+        // Если анализа для данного файла не найдено, вернем 404
         return ResponseEntity.notFound().build();
     }
 }
