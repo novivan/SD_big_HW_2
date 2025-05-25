@@ -39,7 +39,7 @@
    
    # Сборка File Analysis Service
    cd ../file-analysis-service
-   mvn clean install
+   mvn clean package
    ```
 
 ## Запуск
@@ -59,9 +59,12 @@ cd ../file-analysis-service
 java -jar target/file-analysis-service-1.0-SNAPSHOT-exec.jar
 ```
 
-После запуска API Gateway будет доступен по адресу `http://localhost:8080`.
+После запуска микросервисы будут доступны по следующим адресам:
+- API Gateway: `http://localhost:8080`
+- File Storing Service: `http://localhost:5001`
+- File Analysis Service: `http://localhost:5002`
 
-Доступные API endpoints:
+Доступные API endpoints через API Gateway:
 - `http://localhost:8080/` - домашняя страница с информацией о системе
 - `http://localhost:8080/files/**` - операции с файлами (загрузка, получение)
 - `http://localhost:8080/analysis/**` - операции анализа файлов
@@ -103,7 +106,7 @@ java -jar target/file-analysis-service-1.0-SNAPSHOT-exec.jar
 
 #### 2. File Analysis Service
 
-- **Анализ файла и сохранение результатов**
+- **Важно!** Перед получением результатов анализа файла необходимо сначала выполнить анализ через POST-запрос:
   ```bash
   # Анализ файла по ID и сохранение результатов
   curl -X POST http://localhost:8080/analysis/$fileId > analysis_result.json
@@ -115,31 +118,34 @@ java -jar target/file-analysis-service-1.0-SNAPSHOT-exec.jar
 - **Получение статистики файла с сохранением**
   ```bash
   # Получение статистики и сохранение в текстовый файл
-  curl -X GET http://localhost:8080/analysis/$fileId/statistics > statistics.txt
+  curl -X GET http://localhost:8080/analysis/$fileId/statistics > statistics.json
   
   # Просмотр сохраненной статистики
-  cat statistics.txt
+  cat statistics.json | jq
   ```
   
 - **Проверка на плагиат с сохранением результата**
   ```bash
   # Проверка на плагиат и вывод результата
-  curl -X GET http://localhost:8080/analysis/$fileId/plagiarism > plagiarism_check.txt
+  curl -X GET http://localhost:8080/analysis/$fileId/plagiarism > plagiarism_check.json
   
   # Просмотр результата проверки
-  cat plagiarism_check.txt
+  cat plagiarism_check.json | jq
   ```
   
 - **Генерация облака слов и сохранение URL**
   ```bash
   # Получение URL облака слов
-  curl -X GET http://localhost:8080/analysis/$fileId/wordcloud > wordcloud_url.txt
+  curl -X GET http://localhost:8080/analysis/$fileId/wordcloud > wordcloud_response.json
+  
+  # Извлечение URL из JSON ответа
+  wordcloud_url=$(cat wordcloud_response.json | grep -o 'https://quickchart.io/wordcloud?text=[^"]*')
   
   # Открытие URL в браузере (macOS)
-  open $(cat wordcloud_url.txt | grep -o 'https://quickchart.io/wordcloud?text=[^"]*')
+  open $wordcloud_url
   
   # Открытие URL в браузере (Linux)
-  xdg-open $(cat wordcloud_url.txt | grep -o 'https://quickchart.io/wordcloud?text=[^"]*')
+  xdg-open $wordcloud_url
   ```
 
 ### Полный пример рабочего процесса
@@ -170,18 +176,18 @@ curl -s -X GET http://localhost:8080/analysis/$fileId | jq > $OUTPUT_DIR/analysi
 echo "Результаты анализа сохранены в $OUTPUT_DIR/analysis_result.json"
 
 echo "4. Получение статистики..."
-curl -s -X GET http://localhost:8080/analysis/$fileId/statistics > $OUTPUT_DIR/statistics.txt
-echo "Статистика сохранена в $OUTPUT_DIR/statistics.txt"
-cat $OUTPUT_DIR/statistics.txt
+curl -s -X GET http://localhost:8080/analysis/$fileId/statistics > $OUTPUT_DIR/statistics.json
+echo "Статистика сохранена в $OUTPUT_DIR/statistics.json"
+cat $OUTPUT_DIR/statistics.json | jq
 
 echo "5. Проверка на плагиат..."
-curl -s -X GET http://localhost:8080/analysis/$fileId/plagiarism > $OUTPUT_DIR/plagiarism.txt
-echo "Результат проверки сохранен в $OUTPUT_DIR/plagiarism.txt"
-cat $OUTPUT_DIR/plagiarism.txt
+curl -s -X GET http://localhost:8080/analysis/$fileId/plagiarism > $OUTPUT_DIR/plagiarism.json
+echo "Результат проверки сохранен в $OUTPUT_DIR/plagiarism.json"
+cat $OUTPUT_DIR/plagiarism.json | jq
 
 echo "6. Генерация облака слов..."
-curl -s -X GET http://localhost:8080/analysis/$fileId/wordcloud > $OUTPUT_DIR/wordcloud_response.txt
-wordcloud_url=$(grep -o 'https://quickchart.io/wordcloud?text=[^"]*' $OUTPUT_DIR/wordcloud_response.txt)
+curl -s -X GET http://localhost:8080/analysis/$fileId/wordcloud > $OUTPUT_DIR/wordcloud_response.json
+wordcloud_url=$(cat $OUTPUT_DIR/wordcloud_response.json | grep -o 'https://quickchart.io/wordcloud?text=[^"]*')
 echo "$wordcloud_url" > $OUTPUT_DIR/wordcloud_url.txt
 echo "URL облака слов сохранен в $OUTPUT_DIR/wordcloud_url.txt"
 echo "URL: $wordcloud_url"
@@ -189,10 +195,28 @@ echo "URL: $wordcloud_url"
 echo "Все результаты сохранены в директории $OUTPUT_DIR"
 ```
 
-### Swagger UI
-Документация API доступна по адресу:
+### Прямой доступ к микросервисам (для отладки)
+
+Помимо использования API Gateway, вы также можете обращаться напрямую к микросервисам:
+
+- File Storing Service: `http://localhost:5001/files/**`
+- File Analysis Service: `http://localhost:5002/analysis/**`
+
+Например:
+```bash
+# Получение файла напрямую из File Storing Service
+curl -X GET http://localhost:5001/files/$fileId
+
+# Анализ файла напрямую через File Analysis Service
+curl -X POST http://localhost:5002/analysis/$fileId
 ```
-http://localhost:8080/swagger-ui.html
+
+### Swagger UI
+Документация API доступна по адресам:
+```
+http://localhost:8080/swagger-ui.html  # Через API Gateway
+http://localhost:5001/swagger-ui.html  # File Storing Service
+http://localhost:5002/swagger-ui.html  # File Analysis Service
 ```
 
 ## Архитектура
@@ -202,19 +226,22 @@ http://localhost:8080/swagger-ui.html
 - **Функциональность**: Обрабатывает входящие HTTP-запросы и маршрутизирует их к соответствующим микросервисам.
 - **Технологии**: Spring Boot, Spring Cloud Gateway
 - **Взаимодействие**: Перенаправляет запросы к File Storing Service и File Analysis Service.
+- **Порт**: 8080
 
 ### 2. File Storing Service
 - **Функциональность**: Отвечает за загрузку, хранение и выдачу файлов.
 - **Технологии**: Spring Boot, Spring Data
 - **Взаимодействие**: Предоставляет REST API для работы с файлами.
+- **Порт**: 5001
 
 ### 3. File Analysis Service
 - **Функциональность**: Выполняет анализ текстовых файлов, включая:
   - Подсчет статистики (абзацы, слова, символы)
   - Сравнение файлов на плагиат
-  - Генерацию облаков слов (опционально, с использованием QuickChart API)
+  - Генерацию облаков слов (с использованием QuickChart API)
 - **Технологии**: Spring Boot, алгоритмы текстового анализа
 - **Взаимодействие**: Получает файлы от File Storing Service, анализирует их и возвращает результаты.
+- **Порт**: 5002
 
 ### Схема взаимодействия микросервисов
 
@@ -229,7 +256,7 @@ http://localhost:8080/swagger-ui.html
                    ┌─────────────┐
                    │             │
                    │ API Gateway │
-                   │             │
+                   │   (8080)    │
                    └──────┬──────┘
                           │
                  ┌────────┴────────┐
@@ -237,7 +264,7 @@ http://localhost:8080/swagger-ui.html
     ┌────────────▼─────┐    ┌──────▼───────────┐
     │                  │    │                  │
     │ File Storing     │◄───┤ File Analysis    │
-    │ Service          │    │ Service          │
+    │ Service (5001)   │    │ Service (5002)   │
     │                  │───►│                  │
     └──────────────────┘    └──────────────────┘
              │
